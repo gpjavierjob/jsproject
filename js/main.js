@@ -1,1 +1,1 @@
-alert("Aquíi estoy!");
+calcularCosto();
