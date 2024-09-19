@@ -1,1 +1,1 @@
-calcularCosto();
+facturar();
