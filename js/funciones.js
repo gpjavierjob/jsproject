@@ -8,7 +8,7 @@ const mensajeProductoPrecio = "Proporcione el precio unitario del producto."
 const mensajeAPagar = "El importe a pagar es de: "; 
 
 const iva = 0.22;
-const montoMinimo = 200.0;
+const montoMinimo = 1000.0;
 const descuento = 0.10;
 
 const validarNumero = (value) => {
@@ -108,18 +108,21 @@ function crearFactura(cantidadProductos) {
     }
 
     // Calculando el importe con IVA y el importe a pagar
-    let conIva = calcularIVA(importe).toFixed(2);
-    let aPagar = calcularDescuento(conIva).toFixed(2);
+    let conIva = calcularIVA(importe);
+    let aPagar = calcularDescuento(conIva);
+
+    let conIvaStr = conIva.toFixed(2)
+    let aPagarStr = aPagar.toFixed(2)
 
     // Construyendo las líneas de los totales
     textoFactura += "-".repeat(40) + "\n";
     textoFactura += "\t\t\t\t\t\tImporte\t" + importe + "\n";
-    textoFactura += "\t\t\t\t\t\tCon IVA\t" + conIva + "\n";
-    textoFactura += "\t\t\t\t\t\tA pagar\t" + aPagar + "\n";
+    textoFactura += "\t\t\t\t\t\tCon IVA\t" + conIvaStr + "\n";
+    textoFactura += "\t\t\t\t\t\tA pagar\t" + aPagarStr + "\n";
 
     console.log(textoFactura);
 
-    alert(mensajeAPagar + aPagar);
+    alert(mensajeAPagar + aPagarStr);
 
     return false;
 }
