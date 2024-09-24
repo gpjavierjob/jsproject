@@ -1,15 +1,11 @@
 const mensajeCantidadProductos = "NUEVA FACTURA\n\n¿Cuántos productos diferentes desea comprar?";
 const mensajeCancelar = "\n\nPara detener el proceso oprima el botón Cancelar.";
+const mensajeTitulo = "#CAMPO# DEL PRODUCTO #INDICE# DE #CANTIDAD#\n\n"
 const mensajeValorNumericoIncorrecto = "Proporcione un valor numérico.";
 const mensajeValorCadenaIncorrecto = "Proporcione un valor.";
 const mensajeProductoNombre = "Proporcione el nombre del producto.";
 const mensajeProductoCantidad = "Proporcione cuántos elementos necesita de este producto."
 const mensajeProductoPrecio = "Proporcione el precio unitario del producto."
-const mensajeAPagar = "El importe a pagar es de: "; 
-
-const iva = 0.22;
-const montoMinimo = 200.0;
-const descuento = 0.10;
 
 const validarNumero = (value) => {
     if (valueIsNaN(value)) {
@@ -37,12 +33,18 @@ function valueIsNumber(value) {
     return value === value;
 }
 
+function solicitarValorCampo(titulo, nombreCampo, mensajeCampo, funcionValidar) {
+    let mensaje = titulo.replace("#CAMPO#", nombreCampo).concat(mensajeCampo);
+
+    return solicitarValor(mensaje, funcionValidar);
+}
+
 function solicitarValor(mensaje, funcionValidar) {
-    let resultado;
+    let resultado = null;
     let valorValido = false;
 
     while (!valorValido) {
-        resultado = prompt(mensaje + mensajeCancelar);
+        resultado = prompt(mensaje.concat(mensajeCancelar));
 
         if (resultado == null) return null;
 
@@ -54,72 +56,35 @@ function solicitarValor(mensaje, funcionValidar) {
     return resultado;
 }
 
-function calcularIVA(value) {
-    return value * (1 + iva);
-}
-
-function calcularDescuento(value) {
-    if (value < montoMinimo) {
-        return value;
-    }
-
-    return value * (1 - descuento);
-}
-
-function calcularTabs(texto) {
-    let tabs = "";
-
-    for (let index = 12; index > texto.length; index -= 4) {
-        tabs += "\t";
-    }
-
-    return tabs;
-}
-
 function crearFactura(cantidadProductos) {
     let importe = 0;
 
-    // Construyendo la línea del encabezado de la factura
-    let textoFactura = "PRODUCTO\tCANTIDAD\tPRECIO\tSUBTOTAL\n";
+    const operaciones = [
+        ["NOMBRE", mensajeProductoNombre, validarCadena], 
+        ["CANTIDAD", mensajeProductoCantidad, validarNumero], 
+        ["PRECIO", mensajeProductoPrecio, validarNumero]
+    ];
+
+    const factura = new Factura();
 
     for (let index = 0; index < cantidadProductos; index++) {
-        let title = " DEL PRODUCTO " + (index + 1) + " DE " + cantidadProductos + "\n\n";
+        let titulo = mensajeTitulo.replace("#INDICE#", index + 1).replace("#CANTIDAD#", cantidadProductos);
 
-        let productoNombre = solicitarValor("NOMBRE" + title + mensajeProductoNombre, validarCadena);
+        let valores = [];
 
-        if (productoNombre == null) return true;
+        for (const [campo, mensaje, validacion] of operaciones) {
+            let valor = solicitarValorCampo(titulo, campo, mensaje, validacion);
+            if (valor == null) return true;
+            valores.push(valor);
+        }
 
-        let productoCantidad = solicitarValor("CANTIDAD" + title + mensajeProductoCantidad, validarNumero);
+        let [nombre, cantidad, precio] = valores;
 
-        if (productoCantidad == null) return true;
-
-        let productoPrecio = solicitarValor("PRECIO" + title + mensajeProductoPrecio, validarNumero);
-
-        if (productoPrecio == null) return true;
-
-        let subtotal = productoCantidad * productoPrecio;    
-
-        importe += subtotal;
-
-        // Calcular la cantidad de tabuladores necesarios a partir de la longitud del nombre del producto
-        let sep = calcularTabs(productoNombre);
-        // Construyendo la línea de la factura correspondiente al producto 
-        textoFactura += productoNombre + sep + productoCantidad + "\t\t\t" + productoPrecio + "\t\t" + subtotal + "\n"
+        factura.adicionarLinea(new Producto(nombre, precio), cantidad);
     }
 
-    // Calculando el importe con IVA y el importe a pagar
-    let conIva = calcularIVA(importe).toFixed(2);
-    let aPagar = calcularDescuento(conIva).toFixed(2);
-
-    // Construyendo las líneas de los totales
-    textoFactura += "-".repeat(40) + "\n";
-    textoFactura += "\t\t\t\t\t\tImporte\t" + importe + "\n";
-    textoFactura += "\t\t\t\t\t\tCon IVA\t" + conIva + "\n";
-    textoFactura += "\t\t\t\t\t\tA pagar\t" + aPagar + "\n";
-
-    console.log(textoFactura);
-
-    alert(mensajeAPagar + aPagar);
+    impresora = new Impresora();
+    impresora.imprimirFactura(factura);
 
     return false;
 }
