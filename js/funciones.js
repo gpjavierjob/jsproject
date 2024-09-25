@@ -59,7 +59,7 @@ function solicitarValor(mensaje, funcionValidar) {
 function crearFactura(cantidadProductos) {
     let importe = 0;
 
-    const operaciones = [
+    const campos = [
         ["NOMBRE", mensajeProductoNombre, validarCadena], 
         ["CANTIDAD", mensajeProductoCantidad, validarNumero], 
         ["PRECIO", mensajeProductoPrecio, validarNumero]
@@ -72,8 +72,8 @@ function crearFactura(cantidadProductos) {
 
         let valores = [];
 
-        for (const [campo, mensaje, validacion] of operaciones) {
-            let valor = solicitarValorCampo(titulo, campo, mensaje, validacion);
+        for (const [nombre, mensaje, validacion] of campos) {
+            let valor = solicitarValorCampo(titulo, nombre, mensaje, validacion);
             if (valor == null) return true;
             valores.push(valor);
         }
