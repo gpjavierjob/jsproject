@@ -41,11 +41,7 @@ class Factura {
     }
 
     calcularImporteTotal () {
-        let importeTotal = 0;
-        for (const linea of this.lineas) {
-            importeTotal += linea.importe;
-        }
-        this.importeTotal = importeTotal;
+        this.importeTotal = this.lineas.reduce((importeTotal, linea) => importeTotal + linea.importe, 0);
     }
 
     calcularImporteTotalConIva () {
@@ -79,9 +75,9 @@ class Impresora {
         // Construyendo la línea del encabezado de la factura
         let textoFactura = TITULO_PRODUCTO + "\t" + TITULO_CANTIDAD + "\t" + TITULO_PRECIO + "\t"+ TITULO_SUBTOTAL + "\n";
 
-        for (const linea of factura.lineas) {
-            textoFactura += this.imprimirFacturaLinea(linea);
-        }
+        // Construyendo las líneas de la factura
+        textoFactura = factura.lineas.reduce(
+            (textoFactura, linea) => textoFactura + this.imprimirFacturaLinea(linea), textoFactura);
 
         // Construyendo las líneas de los totales
         textoFactura += "-".repeat(40) + "\n";
