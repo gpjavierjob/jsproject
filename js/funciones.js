@@ -1,11 +1,17 @@
 const mensajeCantidadProductos = "NUEVA FACTURA\n\n¿Cuántos productos diferentes desea comprar?";
 const mensajeCancelar = "\n\nPara detener el proceso oprima el botón Cancelar.";
-const mensajeTitulo = "#CAMPO# DEL PRODUCTO #INDICE# DE #CANTIDAD#\n\n"
+const mensajeTitulo = "{0} DEL PRODUCTO {1} DE {2}\n\n";
 const mensajeValorNumericoIncorrecto = "Proporcione un valor numérico.";
 const mensajeValorCadenaIncorrecto = "Proporcione un valor.";
 const mensajeProductoNombre = "Proporcione el nombre del producto.";
-const mensajeProductoCantidad = "Proporcione cuántos elementos necesita de este producto."
-const mensajeProductoPrecio = "Proporcione el precio unitario del producto."
+const mensajeProductoCantidad = "Proporcione cuántos elementos necesita de este producto.";
+const mensajeProductoPrecio = "Proporcione el precio unitario del producto.";
+
+function printf(format, ...args) {
+    return format.replace(/{(\d+)}/g, (match, number) => {
+      return typeof args[number] !== 'undefined' ? args[number] : match
+    })
+}
 
 const validarNumero = (value) => {
     if (valueIsNaN(value)) {
@@ -34,7 +40,7 @@ function valueIsNumber(value) {
 }
 
 function solicitarValorCampo(titulo, nombreCampo, mensajeCampo, funcionValidar) {
-    let mensaje = titulo.replace("#CAMPO#", nombreCampo).concat(mensajeCampo);
+    let mensaje = printf(titulo, nombreCampo).concat(mensajeCampo);
 
     return solicitarValor(mensaje, funcionValidar);
 }
@@ -68,7 +74,7 @@ function crearFactura(cantidadProductos) {
     const factura = new Factura();
 
     for (let index = 0; index < cantidadProductos; index++) {
-        let titulo = mensajeTitulo.replace("#INDICE#", index + 1).replace("#CANTIDAD#", cantidadProductos);
+        let titulo = printf(mensajeTitulo, undefined, index + 1, cantidadProductos);
 
         let valores = [];
 
