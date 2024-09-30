@@ -12,13 +12,52 @@ const TITULO_CON_IVA = "Con IVA";
 const TITULO_A_PAGAR = "A pagar";
 
 class Producto {
-    constructor (nombre, precio) {
+    constructor (id, nombre, precio) {
+        this.id = id;
         this.nombre = nombre;
         this.precio = parseFloat(precio);
     }
 }
 
-class FacturaLinea {
+class Catalogo {
+    constructor () {
+        this.productos = new Map([]);
+    }
+
+    buscarProductoPorNombre(nombre) {
+        for (const [id, producto] of this.productos.entries()) {
+            if (producto.nombre === nombre) return id; // Se sale, devolviendo el id del producto
+        }
+        // No existe ningún producto con ese nombre
+        return -1;
+    }
+
+    adicionarProducto (nombre, precio) {
+        let id = buscarProductoPorNombre(nombre);
+        if (id !== -1) {
+            // Se modifica el producto para no devolver un error
+            this.modificarProducto(id, nombre, precio);
+        }
+        else {
+            // Se utilizan el número de milisegundos del momento actual como el id
+            id = Date.now();
+            this.productos.set(id, new Producto(id, nombre.trim(), precio));
+        }
+    }
+
+    modificarProducto (id, nombre=null, precio=null) {
+        const producto = this.productos.get(id);
+        // Sólo se modifica el producto si se proporciona el nuevo nombre y/o precio
+        if (nombre !== null) producto.nombre = nombre.trim();
+        if (precio !== null) producto.precio = parseFloat(precio);
+    }
+
+    eliminarProducto (id) {
+        this.productos.delete(id);
+    }
+}
+
+class CarritoLinea {
     constructor (producto, cantidad) {
         this.producto = producto;
         this.cantidad = parseFloat(cantidad);
@@ -26,7 +65,7 @@ class FacturaLinea {
      }
 }
 
-class Factura {
+class Carrito {
     constructor() {
         this.lineas = [];
         this.calculada = false;
@@ -36,8 +75,17 @@ class Factura {
     }
 
     adicionarLinea (producto, cantidad){
-        this.lineas.push(new FacturaLinea(producto, cantidad))
+        const index = this.lineas.findIndex((linea) => { linea.producto.nombre === producto.nombre })
+        if (index < 0) {
+            this.lineas.push(new FacturaLinea(producto, cantidad));
+        } else {
+            this.lineas[index].cantidad += parseFloat(cantidad);
+        }
         this.calculada = false;
+    }
+
+    eliminarLinea (index) {
+
     }
 
     calcularImporteTotal () {
