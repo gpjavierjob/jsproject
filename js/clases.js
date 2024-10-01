@@ -25,17 +25,17 @@ class Catalogo {
     }
 
     buscarProductoPorNombre(nombre) {
-        for (const [id, producto] of this.productos.entries()) {
-            if (producto.nombre === nombre) return id; // Se sale, devolviendo el id del producto
-        }
-        // No existe ningún producto con ese nombre
-        return -1;
+        // Obtener un arreglo de objetos de tipo Producto para poder utilizar find
+        // No existe función similar para Maps ni iteradores
+        const productos = Array.from(this.productos.values());
+        const producto = productos.find((producto) => { producto.nombre === nombre })
+        return producto.id ? producto !== undefined : null;
     }
 
     adicionarProducto (nombre, precio) {
         let id = buscarProductoPorNombre(nombre);
-        if (id !== -1) {
-            // Se modifica el producto para no devolver un error
+        if (id !== null) {
+            // Se modifica el producto para evitar lanzar un error
             this.modificarProducto(id, nombre, precio);
         }
         else {
@@ -58,38 +58,67 @@ class Catalogo {
 }
 
 class CarritoLinea {
-    constructor (producto, cantidad) {
-        this.producto = producto;
+    constructor (carrito, id, cantidad) {
+        this.carrito = carrito;
+        // id del producto
+        this.id = id;
+        // cantidad del producto
         this.cantidad = parseFloat(cantidad);
-        this.importe = this.producto.precio * this.cantidad;
+        this.importe = 0.0;
+        this.calcularImporte();
+     }
+
+     calcularImporte() {
+        this.importe = this.carrito.catalogo.productos.get(this.id).precio * this.cantidad;
+     }
+
+     aumentarCantidad(value) {
+        this.cantidad += parseFloat(value);
+        this.calcularImporte();
+     }
+
+     disminuirCantidad(value) {
+        this.cantidad -= parseFloat(value);
+        this.calcularImporte();
      }
 }
 
 class Carrito {
-    constructor() {
-        this.lineas = [];
-        this.calculada = false;
+    constructor(catalogo) {
+        this.catalogo = catalogo;
+        this.lineas = new Map([]);
+        this.calculado = false;
         this.importeTotal = 0.0;
         this.importeTotalConIva = 0.0;
         this.importeTotalConDescuento = 0.0;
     }
 
-    adicionarLinea (producto, cantidad){
-        const index = this.lineas.findIndex((linea) => { linea.producto.nombre === producto.nombre })
-        if (index < 0) {
-            this.lineas.push(new FacturaLinea(producto, cantidad));
+    adicionarLinea (id, cantidad){
+        if (this.lineas.has(id)) {
+            // Si el producto ya está en el carrito, se aumenta su cantidad para evitar lanzar error
+            this.lineas.get(id).aumentarCantidad(parseFloat(cantidad));
         } else {
-            this.lineas[index].cantidad += parseFloat(cantidad);
+            this.lineas.set(id, new CarritoLinea(this, id, cantidad));
         }
-        this.calculada = false;
+        this.calculado = false;
     }
 
-    eliminarLinea (index) {
+    actualizarLinea (id, cantidad) {
+        // Si el producto no está en el carrito no se hace nada, para evitar lanzar error
+        if (this.lineas.has(id)) {
+            this.lineas.get(id).cantidad = parseFloat(cantidad);
+        }
+    }
 
+    eliminarLinea (id) {
+        this.lineas.delete(id);
     }
 
     calcularImporteTotal () {
-        this.importeTotal = this.lineas.reduce((importeTotal, linea) => importeTotal + linea.importe, 0);
+        // Obtener un arreglo de objetos de tipo CarritoLinea para poder utilizar reduce
+        // No existe función similar para Maps ni iteradores
+        const lineas = Array.from(this.lineas.values())
+        this.importeTotal = lineas.reduce((importeTotal, linea) => importeTotal + linea.importe, 0);
     }
 
     calcularImporteTotalConIva () {
@@ -105,42 +134,47 @@ class Carrito {
     }
 
     calcularImportes () {
-        if (this.calculada) return;
+        if (this.calculado) return;
 
         this.calcularImporteTotal();
         this.calcularImporteTotalConIva();
         this.calcularImporteTotalConDescuento();
 
-        this.calculada = true;
+        this.calculado = true;
     }
 
 }
 
 class Impresora {
-    imprimirFactura (factura) {
-        if (!factura.calculada) factura.calcularImportes();
+    imprimirFactura (carrito) {
+        if (!carrito.calculado) carrito.calcularImportes();
 
         // Construyendo la línea del encabezado de la factura
-        let textoFactura = TITULO_PRODUCTO + "\t" + TITULO_CANTIDAD + "\t" + TITULO_PRECIO + "\t"+ TITULO_SUBTOTAL + "\n";
+        let textoFactura = `${TITULO_PRODUCTO}\t${TITULO_CANTIDAD}\t${TITULO_PRECIO}\t${TITULO_SUBTOTAL}\n`;
+
+        // Obtener un arreglo de objetos de tipo CarritoLinea para poder utilizar reduce
+        // No existe función similar para Maps ni iteradores
+        const lineas = Array.from(this.lineas.values())
 
         // Construyendo las líneas de la factura
-        textoFactura = factura.lineas.reduce(
-            (textoFactura, linea) => textoFactura + this.imprimirFacturaLinea(linea), textoFactura);
+        textoFactura = lineas.reduce(
+            (textoFactura, linea) => `${textoFactura}${this.imprimirFacturaLinea(carrito, linea)}`, textoFactura);
 
         // Construyendo las líneas de los totales
-        textoFactura += "-".repeat(40) + "\n";
-        textoFactura += "\t\t\t\t\t\t" + TITULO_IMPORTE + "\t" + factura.importeTotal.toFixed(2) + "\n";
-        textoFactura += "\t\t\t\t\t\t" + TITULO_CON_IVA + "\t" + factura.importeTotalConIva.toFixed(2) + "\n";
-        textoFactura += "\t\t\t\t\t\t" + TITULO_A_PAGAR + "\t" + factura.importeTotalConDescuento.toFixed(2) + "\n";
+        textoFactura += `${"-".repeat(40)}\n`;
+        textoFactura += `\t\t\t\t\t\t${TITULO_IMPORTE}\t${carrito.importeTotal.toFixed(2)}\n`;
+        textoFactura += `\t\t\t\t\t\t${TITULO_CON_IVA}\t${carrito.importeTotalConIva.toFixed(2)}\n`;
+        textoFactura += `\t\t\t\t\t\t${TITULO_A_PAGAR}\t${carrito.importeTotalConDescuento.toFixed(2)}\n`;
 
         console.log(textoFactura);
     }
 
-    imprimirFacturaLinea(linea) {
+    imprimirFacturaLinea(carrito, linea) {
+        const producto = carrito.Catalogo.productos.get(linea.id);
         // Calcular la cantidad de tabuladores necesarios a partir de la longitud del nombre del producto
-        let tabs = this.calcularTabs(linea.producto.nombre);
+        let tabs = this.calcularTabs(producto.nombre);
         // Construyendo la línea de la factura correspondiente al producto 
-        return linea.producto.nombre + tabs + linea.cantidad + "\t\t\t" + linea.producto.precio.toFixed(2) + "\t" + linea.importe.toFixed(2) + "\n"
+        return `${producto.nombre}${tabs}${linea.cantidad}\t\t\t${producto.precio.toFixed(2)}\t${linea.importe.toFixed(2)}\n`;
     }
 
     calcularTabs(texto) {
