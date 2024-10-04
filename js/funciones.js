@@ -76,7 +76,7 @@ function crearFactura(cantidadProductos) {
     for (let index = 0; index < cantidadProductos; index++) {
         let titulo = printf(mensajeTitulo, undefined, index + 1, cantidadProductos);
 
-        let valores = [];
+        const valores = [];
 
         for (const [nombre, mensaje, validacion] of campos) {
             let valor = solicitarValorCampo(titulo, nombre, mensaje, validacion);
@@ -89,7 +89,7 @@ function crearFactura(cantidadProductos) {
         factura.adicionarLinea(new Producto(nombre, precio), cantidad);
     }
 
-    impresora = new Impresora();
+    const impresora = new Impresora();
     impresora.imprimirFactura(factura);
 
     return false;
