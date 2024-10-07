@@ -160,16 +160,25 @@ class Impresora {
         textoFactura = lineas.reduce(
             (textoFactura, linea) => `${textoFactura}${this.imprimirFacturaLinea(carrito, linea)}`, textoFactura);
 
-        // Construyendo las líneas de los totales
+        // Construyendo la línea de separación
         textoFactura += `${"-".repeat(40)}\n`;
-        textoFactura += `\t\t\t\t\t\t${TITULO_IMPORTE}\t${carrito.importeTotal.toFixed(2)}\n`;
-        textoFactura += `\t\t\t\t\t\t${TITULO_CON_IVA}\t${carrito.importeTotalConIva.toFixed(2)}\n`;
-        textoFactura += `\t\t\t\t\t\t${TITULO_A_PAGAR}\t${carrito.importeTotalConDescuento.toFixed(2)}\n`;
+
+        // Construyendo las líneas de los totales
+        const totales = {
+            TITULO_IMPORTE: carrito.importeTotal,
+            TITULO_CON_IVA: carrito.importeTotalConIva,
+            TITULO_A_PAGAR: carrito.importeTotalConDescuento,
+        }
+        textoFactura = Array.from(totales.entries()).reduce(
+            ([titulo, valor]) => `${textoFactura}${this.imprimirTotalLinea(titulo, valor)}`, textoFactura);
+        // textoFactura += `\t\t\t\t\t\t${TITULO_IMPORTE}\t${carrito.importeTotal.toFixed(2)}\n`;
+        // textoFactura += `\t\t\t\t\t\t${TITULO_CON_IVA}\t${carrito.importeTotalConIva.toFixed(2)}\n`;
+        // textoFactura += `\t\t\t\t\t\t${TITULO_A_PAGAR}\t${carrito.importeTotalConDescuento.toFixed(2)}\n`;
 
         console.log(textoFactura);
     }
 
-    imprimirFacturaLinea(carrito, linea) {
+    imprimirFacturaLinea (carrito, linea) {
         const producto = carrito.Catalogo.productos.get(linea.id);
         // Calcular la cantidad de tabuladores necesarios a partir de la longitud del nombre del producto
         let tabs = this.calcularTabs(producto.nombre);
@@ -177,7 +186,11 @@ class Impresora {
         return `${producto.nombre}${tabs}${linea.cantidad}\t\t\t${producto.precio.toFixed(2)}\t${linea.importe.toFixed(2)}\n`;
     }
 
-    calcularTabs(texto) {
+    imprimirTotalLinea (titulo, valor) {
+        return `\t\t\t\t\t\t${titulo}\t${valor.toFixed(2)}\n`;
+    }
+
+    calcularTabs (texto) {
         let tabs = "";
 
         for (let index = 12; index > texto.length; index -= 4) {
