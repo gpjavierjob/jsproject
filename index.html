@@ -1,14 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curso JavaScript - Preentrega 1</title>
-</head>
-<body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curso JavaScript</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Carrito de Compras</h1>
+      <a href="/catalogo.html">Catálogo</a>
+    </header>
+    <main>
+      <!-- Lista de productos -->
+      <div class="productos">
+        <div class="producto" data-id="1">
+          <h2>Producto 1</h2>
+          <p>Precio: $10</p>
+          <div class="producto-cantidad">
+            <label>Cantidad</label>
+            <div>&emsp;</div>
+            <input type="number" value="1" min="1" max="10" />
+          </div>
+          <button class="agregar-carrito">Agregar al carrito</button>
+        </div>
+        <div class="producto" data-id="2">
+          <h2>Producto 2</h2>
+          <p>Precio: $20</p>
+          <div class="producto-cantidad">
+            <label>Cantidad</label>
+            <div>&emsp;</div>
+            <input type="number" value="1" min="1" max="10" />
+          </div>
+          <button class="agregar-carrito">Agregar al carrito</button>
+        </div>
+        <div class="producto" data-id="3">
+          <h2>Producto 3</h2>
+          <p>Precio: $30</p>
+          <div class="producto-cantidad">
+            <label>Cantidad</label>
+            <div>&emsp;</div>
+            <input type="number" value="1" min="1" max="10" />
+          </div>
+          <button class="agregar-carrito">Agregar al carrito</button>
+        </div>
+        <div class="producto" data-id="4">
+          <h2>Producto 4</h2>
+          <p>Precio: $100</p>
+          <div class="producto-cantidad">
+            <label>Cantidad</label>
+            <div>&emsp;</div>
+            <input type="number" value="1" min="1" max="10" />
+          </div>
+          <button class="agregar-carrito">Agregar al carrito</button>
+        </div>
+        <div class="producto" data-id="5">
+          <h2>Producto 5</h2>
+          <p>Precio: $120</p>
+          <div class="producto-cantidad">
+            <label>Cantidad</label>
+            <div>&emsp;</div>
+            <input type="number" value="1" min="1" max="10" />
+          </div>
+          <button class="agregar-carrito">Agregar al carrito</button>
+        </div>
+      </div>
+
+      <!-- Carrito -->
+      <h2>Tu Carrito</h2>
+      <div id="carrito">
+        <p>Tu carrito está vacío</p>
+      </div>
+    </main>
 
     <script src="/js/clases.js"></script>
     <script src="/js/funciones.js"></script>
     <script src="/js/main.js"></script>
-</body>
+  </body>
 </html>
