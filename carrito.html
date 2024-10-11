@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curso JavaScript - Catálogo de productos</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Catálogo de Productos</h1>
+      <a href="/index.html">Carrito de Compras</a>
+    </header>
+    <main>
+
+      <!-- Carrito -->
+      <h2>Nuevo producto</h2>
+      <div class="nuevo-producto">
+        <form class="form" action="">
+          <div class="form-field">
+            <label class="form-label" for="data-nombre">Nombre</label>
+            <div>&emsp;</div>
+            <input id="data-nombre" type="text" maxlength="12"/>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="data-precio">Precio</label>
+            <div>&emsp;</div>
+            <input id="data-precio" type="number" min="0"/>
+          </div>
+          <button class="agregar-catalogo">Agregar al catálogo</button>
+        </form>
+      </div>
+    </main>
+
+    <script src="/js/clases.js"></script>
+    <script src="/js/funciones.js"></script>
+    <script src="/js/carrito.js"></script>
+  </body>
+</html>

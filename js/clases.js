@@ -13,6 +13,7 @@ const TITULO_A_PAGAR = "A pagar";
 
 const KEY_CATALOGO = "CATALOGO_PRODUCTOS";
 const KEY_CARRITO = "CARRITO_COMPRAS";
+const KEY_PRODUCTO_ACTUAL = "PRODUCTO_ACTUAL";
 
 class AlmacenamientoLocal {
     // Almacena un mapa cuyos valores son objetos
@@ -40,16 +41,26 @@ class AlmacenamientoLocal {
         }));
     }
 
-    eliminar(key) {
+    static guardarProductoActual(id) {
+        localStorage.setItem(KEY_PRODUCTO_ACTUAL, id);
+    }
+
+    static obtenerProductoActual() {
+        return localStorage.getItem(KEY_PRODUCTO_ACTUAL);
+    }
+
+    // Elimina un elemento del almacenamiento local
+    static eliminar(key) {
         localStorage.removeItem(key);
     }
 }
 
 class Producto {
-    constructor (id, nombre, precio) {
+    constructor (id, nombre, precio, imagen) {
         this.id = id;
         this.nombre = nombre;
         this.precio = parseFloat(precio);
+        this.imagen = imagen;
     }
 }
 
@@ -280,3 +291,6 @@ class Impresora {
     }
 
 }
+
+const catalogo = new Catalogo();
+const carrito = new Carrito(catalogo);
