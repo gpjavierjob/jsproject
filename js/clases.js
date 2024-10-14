@@ -15,6 +15,11 @@ const KEY_CATALOGO = "CATALOGO_PRODUCTOS";
 const KEY_CARRITO = "CARRITO_COMPRAS";
 const KEY_PRODUCTO_ACTUAL = "PRODUCTO_ACTUAL";
 
+const CATEGORIAS = [
+    ["frutas", "Frutas"],
+    ["verduras", "Verduras"]
+]
+
 class AlmacenamientoLocal {
     // Almacena un mapa cuyos valores son objetos
     static guardarMapa (key, mapa) {
@@ -56,10 +61,11 @@ class AlmacenamientoLocal {
 }
 
 class Producto {
-    constructor (id, nombre, precio, imagen) {
+    constructor (id, nombre, precio, categoria, imagen) {
         this.id = id;
         this.nombre = nombre;
         this.precio = parseFloat(precio);
+        this.categoria = categoria;
         this.imagen = imagen;
     }
 }
@@ -96,32 +102,34 @@ class Catalogo {
         return producto !== undefined ? producto : null;
     }
 
-    adicionar (nombre, precio) {
+    adicionar (nombre, precio, categoria, imagen) {
         const producto = this.buscarPorNombre(nombre);
 
         if (producto !== null) {
             // Se modifica el producto para evitar lanzar un error
-            this.modificar(producto, nombre, precio);
+            this.modificar(producto, nombre, precio, categoria, imagen);
             return producto;
         }
 
         // Se crea un nuevo producto. Se utiliza el número de milisegundos 
         // del momento actual como su id
         const id = Date.now();
-        nuevoProducto = new Producto(id, nombre.trim(), parseFloat(precio))
+        const nuevoProducto = new Producto(id, nombre.trim(), parseFloat(precio), categoria.trim(), imagen.trim())
         this.#productos.set(id, nuevoProducto);
         this.#guardarMapa();
         return nuevoProducto;
     }
 
-    modificar (destino, nombre=null, precio=null) {
+    modificar (destino, nombre=null, precio=null, categoria=null, imagen=null) {
         const producto = (destino instanceof Object) ? destino : this.obtener(destino);
         // Si destino es null o no se encuentra el producto, se sale sin efectuar ninguna
         // operación.
         if (producto == undefined || producto == null) return;
-        // Sólo se modifica el producto si se proporciona el nuevo nombre y/o precio
+        // Sólo se modifica el producto si se proporcionan valores
         if (nombre !== null) producto.nombre = nombre.trim();
         if (precio !== null) producto.precio = parseFloat(precio);
+        if (categoria !== null) producto.categoria = parseFloat(categoria);
+        if (imagen !== null) producto.imagen = parseFloat(imagen);
         this.#guardarMapa();
     }
 
@@ -157,6 +165,7 @@ class Carrito {
 
     constructor(catalogo) {
         this.catalogo = catalogo;
+        this.cantidadTotal = 0.0;
         this.importeTotal = 0.0;
         this.importeTotalConIva = 0.0;
         this.importeTotalConDescuento = 0.0;
@@ -186,7 +195,7 @@ class Carrito {
 
     adicionarLinea (id, cantidad){
         if (this.#lineas.has(id)) {
-            // Si el producto ya está en el carrito, se aumenta su cantidad para evitar lanzar error
+            // Si el producto ya está en el carrito, se aumenta su cantidad
             this.#lineas.get(id).aumentarCantidad(parseFloat(cantidad));
         } else {
             this.#lineas.set(id, new CarritoLinea(id, cantidad));
@@ -219,9 +228,9 @@ class Carrito {
     #calcularImporteTotal () {
         // Obtener un arreglo de objetos de tipo CarritoLinea para poder utilizar reduce
         // No existe función similar para Maps ni iteradores
-        const lineas = Array.from(this.#lineas.values())
-        this.importeTotal = lineas.reduce(
-            (importeTotal, linea) => importeTotal + linea.calcularImporte(this.catalogo), 0);
+        const lineas = Array.from(this.#lineas.values());
+        this.cantidadTotal, this.importeTotal = lineas.reduce(
+            ([cantidadTotal, importeTotal], linea) => [cantidadTotal + linea.Cantidad, importeTotal + linea.calcularImporte(this.catalogo)], [0, 0]);
     }
 
     #calcularImporteTotalConIva () {

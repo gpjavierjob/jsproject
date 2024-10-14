@@ -1,2 +1,4 @@
-// const productoWidget = new ProductoWidget(document.getElementById("producto"));
-// productoWidget.render();
+console.log("catalogo.js");
+
+const catalogoWidget = new CatalogoWidget(document.getElementById("catalogo"));
+catalogoWidget.render();
