@@ -170,7 +170,7 @@ class Carrito {
         this.importeTotalConIva = 0.0;
         this.importeTotalConDescuento = 0.0;
         this.#leerMapa();
-        this.#calcularImportes();
+        this.#calcularTotales();
     }
 
     #guardarMapa () {
@@ -200,7 +200,7 @@ class Carrito {
         } else {
             this.#lineas.set(id, new CarritoLinea(id, cantidad));
         }
-        this.#calcularImportes();
+        this.#calcularTotales();
         this.#guardarMapa();
     }
 
@@ -208,29 +208,31 @@ class Carrito {
         // Si el producto no está en el carrito no se hace nada, para evitar lanzar error
         if (this.#lineas.has(id)) {
             this.#lineas.get(id).cantidad = parseFloat(cantidad);
-            this.#calcularImportes();
+            this.#calcularTotales();
             this.#guardarMapa();
         }
     }
 
     eliminarLinea (id) {
         this.#lineas.delete(id);
-        this.#calcularImportes();
+        this.#calcularTotales();
         this.#guardarMapa();
     }
 
     vaciar () {
         this.#lineas.clear();
-        this.#calcularImportes();
+        this.#calcularTotales();
         this.#eliminarMapa();
     }
 
-    #calcularImporteTotal () {
-        // Obtener un arreglo de objetos de tipo CarritoLinea para poder utilizar reduce
-        // No existe función similar para Maps ni iteradores
-        const lineas = Array.from(this.#lineas.values());
-        this.cantidadTotal, this.importeTotal = lineas.reduce(
-            ([cantidadTotal, importeTotal], linea) => [cantidadTotal + linea.Cantidad, importeTotal + linea.calcularImporte(this.catalogo)], [0, 0]);
+    #calcularTotalesBasicos () {
+        const lineas = this.lineas();
+        // Se calculan la cantidadTotal y el importeTotal de esta forma para evitar iterar
+        // dos veces por todo el arreglo de líneas
+        [this.cantidadTotal, this.importeTotal] = lineas.reduce(
+            ([cantidadTotal, importeTotal], linea) => 
+                [cantidadTotal + linea.cantidad, importeTotal + linea.calcularImporte(this.catalogo)], 
+            [0, 0]);
     }
 
     #calcularImporteTotalConIva () {
@@ -245,8 +247,8 @@ class Carrito {
         }
     }
 
-    #calcularImportes () {
-        this.#calcularImporteTotal();
+    #calcularTotales () {
+        this.#calcularTotalesBasicos();
         this.#calcularImporteTotalConIva();
         this.#calcularImporteTotalConDescuento();
     }
@@ -255,8 +257,6 @@ class Carrito {
 
 class Impresora {
     imprimirFactura (carrito) {
-        if (!carrito.calculado) carrito.calcularImportes();
-
         // Construyendo la línea del encabezado de la factura
         let textoFactura = `${TITULO_PRODUCTO}\t${TITULO_CANTIDAD}\t${TITULO_PRECIO}\t${TITULO_SUBTOTAL}\n`;
 
