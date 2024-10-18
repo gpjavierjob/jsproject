@@ -6,6 +6,12 @@ import { AlmacenamientoLocal } from "../clases/almacenamiento.js";
 const KEY_PRODUCTO_ACTUAL = "PRODUCTO_ACTUAL";
 
 class ComprasWidget extends BaseWidget {
+    constructor (parent) {
+        super(parent);
+        // Evento que se dispara cuando se hace click en una imagen de producto
+        this.onVerProducto = null;
+    }
+
     render () {
         const productos = catalogo.todos();
 
@@ -83,7 +89,7 @@ class ComprasWidget extends BaseWidget {
         const boton = event.currentTarget;
         const producto_id = boton.getAttribute("producto_id");
         AlmacenamientoLocal.guardar(KEY_PRODUCTO_ACTUAL, parseInt(producto_id));
-        window.location.href = "/producto.html";
+        if (this.onVerProducto) this.onVerProducto();
     }
 }
 

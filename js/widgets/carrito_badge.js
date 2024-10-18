@@ -2,6 +2,12 @@ import { BaseWidget } from "./base.js"
 import { carrito } from "../clases/carrito.js"
 
 class CarritoBadgeWidget extends BaseWidget {
+    constructor (parent) {
+        super(parent);
+        // Evento que se dispara cuando se hace click en el botón del widget
+        this.onVerCarrito = null;
+    }
+
     render () {
         const contents = `
             <div class="d-flex flex-row justify-content-center align-items-center flex-stretch p-3">
@@ -25,7 +31,7 @@ class CarritoBadgeWidget extends BaseWidget {
     }
 
     verCarrito () {
-        window.location.href = "/carrito.html";
+        if (this.onVerCarrito) this.onVerCarrito();
     }
 }
 
