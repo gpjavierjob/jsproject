@@ -3,6 +3,16 @@ import { AlmacenamientoLocal } from "../clases/almacenamiento.js";
 import { catalogo } from "../clases/catalogo.js";
 import { carrito } from "../clases/carrito.js";
 
+import { Dialogo } from "./dialogo.js";
+
+const TITULO = "Producto";
+
+const LABEL_PRECIO = "Precio";
+const LABEL_CANTIDAD = "Cantidad";
+const LABEL_ADICIONAR_PRODUCTO = "Agregar al carrito";
+
+const MENSAJE_PRODUCTO_ADICIONADO = "¡El producto fue añadido al carrito!.";
+
 const KEY_PRODUCTO_ACTUAL = "PRODUCTO_ACTUAL";
 
 class ProductoWidget extends BaseWidget {
@@ -13,7 +23,7 @@ class ProductoWidget extends BaseWidget {
         const contents = `
             <div class="container">
                 <div>
-                    <h2 class="text-center my-2">Producto</h2>
+                    <h2 class="text-center my-2">${TITULO}</h2>
                 </div>
                 <div class="card m-3 d-flex flex-row flex-wrap justify-content-evenly">
                     <div class="text-center" style="max-width: 270px;">
@@ -23,22 +33,16 @@ class ProductoWidget extends BaseWidget {
                     <div class="">
                         <div id="${producto.id}" class="card-body text-center text-md-start">
                             <h2 class="card-title">${producto.nombre}</h2>
-                            <p class="card-text">Precio: $${producto.precio.toFixed(2)}</p>
+                            <p class="card-text">${LABEL_PRECIO}: $${producto.precio.toFixed(2)}</p>
                             <div class="card-text d-flex flex-row justify-content-center justify-content-md-start align-items-end my-3">
-                                <label class="form-label">Cantidad</label>
+                                <label class="form-label">${LABEL_CANTIDAD}</label>
                                 <div>&emsp;</div>
                                 <input id="cantidad-${producto.id}" class="form-control" type="number" value="1" min="1" max="10" />
                             </div>
-                            <a producto_id="${producto.id}" href="#" class="btn btn-primary agregar-carrito-button">Agregar al carrito</a>
+                            <a producto_id="${producto.id}" href="#" class="btn btn-primary agregar-carrito-button">
+                                ${LABEL_ADICIONAR_PRODUCTO}
+                            </a>
                         </div>
-                    </div>
-                </div>
-                <div id="mensaje-carrito" class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            El producto se ha incorporado al carrito.
-                        </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                     </div>
                 </div>
             </div>
@@ -59,9 +63,8 @@ class ProductoWidget extends BaseWidget {
 
         this.actualizar();
 
-        // Mostrar toast
-        const mensaje = document.getElementById("mensaje-carrito");
-        bootstrap.Toast.getOrCreateInstance(mensaje).show();
+        // Mostrar mensaje de adición
+        Dialogo.mostrarToastExito (MENSAJE_PRODUCTO_ADICIONADO);
     }
 }
 

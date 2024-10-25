@@ -2,9 +2,16 @@ import { BaseWidget } from "./base.js"
 import { catalogo } from "../clases/catalogo.js";
 import { carrito } from "../clases/carrito.js"
 
+import { Dialogo } from "./dialogo.js";
+
+const TITULO = "Carrito";
+
 const TITULO_IMPORTE = "Importe";
 const TITULO_CON_IVA = "Con IVA";
 const TITULO_A_PAGAR = "A pagar";
+
+const MENSAJE_CARRITO_VACIO = "No existen productos en el carrito.";
+const MENSAJE_COMPRA = "¡Felicitaciones! La compra ha sido realizada exitósamente.";
 
 class CarritoWidget extends BaseWidget {
     render () {
@@ -13,24 +20,20 @@ class CarritoWidget extends BaseWidget {
         let contents = `
             <div class="container">
                 <div>
-                    <h2 class="text-center my-2">Carrito</h2>
+                    <h2 class="text-center my-2">${TITULO}</h2>
                 </div>
+                <div class="container">
         `;
 
         if (lineas.length === 0) {
             contents += `
-                <div class="alert alert-info" role="alert">
-                    No existen productos en el carrito.
-                </div>
+                    <div class="alert alert-info" role="alert">${MENSAJE_CARRITO_VACIO}</div>
             `
         } else {
-            contents += `
-                <div class="container">
-            `;
             contents += lineas.reduce(
                 (content, linea) => `
                     ${content}
-                    <div class="row">
+                    <div class="row border-bottom">
                         <div class="col col-2 col-md-1 text-start">
                             <img class="img" src="${catalogo.obtener(linea.id).imagen}" 
                                  alt="${catalogo.obtener(linea.id).nombre}"
@@ -59,7 +62,6 @@ class CarritoWidget extends BaseWidget {
                             </button>
                         </div>
                     </div>
-                    <hr>
                 `, "");
             contents += `
                     <div class="row">
@@ -102,14 +104,6 @@ class CarritoWidget extends BaseWidget {
                         <div class="col col-6 text-center">
                             <button class="btn btn-success" id="boton-efectuar-compra">Comprar</button>
                         </div>
-                    </div>
-                </div>
-                <div id="mensaje-compra" class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ¡Felicitaciones! La compra ha sido realizada exitósamente.
-                        </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                     </div>
                 </div>
             `;
@@ -161,8 +155,8 @@ class CarritoWidget extends BaseWidget {
 
     efectuarCompra (event) {
         this.vaciar();
-        const mensaje = document.getElementById("mensaje-compra");
-        bootstrap.Toast.getOrCreateInstance(mensaje).show();
+        // Mostrar mensaje de éxito
+        Dialogo.mostrarToastExito (MENSAJE_COMPRA);
     }
 }
 

@@ -4,6 +4,7 @@ import { CarritoBadgeWidget } from "./carrito_badge.js"
 import { CatalogoWidget } from "./catalogo.js";
 import { ProductoWidget } from "./producto.js"
 import { CarritoWidget } from "./carrito.js";
+import { TiempoWidget } from "./tiempo.js";
 
 import { CatalogoDatos } from "../datos/catalogo.js"
 
@@ -12,6 +13,7 @@ class SPAWidget extends BaseWidget {
         super(parent);
         this.vistaActiva = null;
     }
+
     render () {
         const contenido = `
             <header class="container-fluid bg-warning">
@@ -39,10 +41,17 @@ class SPAWidget extends BaseWidget {
                 <div id="contents">
                 </div>
             </main>
+            <footer class="mt-auto bg-warning d-flex flex-row flex-wrap justify-content-around">
+            </footer>
         `;
 
         const body = document.getElementsByTagName("body")[0];
         body.insertAdjacentHTML("afterBegin", contenido)
+
+        // Adicionando el widget del pronóstico del tiempo
+        const footer = document.getElementsByTagName("footer")[0];
+        const tiempoWidget = new TiempoWidget(footer);
+        tiempoWidget.inicializar();
 
         // Adicionando los handlers del evento click de los elementos del nav.
         const enlaces = body.getElementsByClassName("nav-link");
