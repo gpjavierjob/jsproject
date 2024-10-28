@@ -135,6 +135,7 @@ class SPAWidget extends BaseWidget {
         carritoBadgeWidget.inicializar();
 
         productoWidget.onActualizar = carritoBadgeWidget.actualizar.bind(carritoBadgeWidget);
+        carritoBadgeWidget.onVerCarrito = this.cambiarVistaCarrito.bind(this);
     }
 
     mostrarVistaCarrito () {

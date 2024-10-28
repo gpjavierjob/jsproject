@@ -68,13 +68,29 @@ class Catalogo {
         const producto = (destino instanceof Object) ? destino : this.obtener(destino);
         // Si destino es null o no se encuentra el producto, se sale sin efectuar ninguna
         // operación.
-        if (producto == undefined || producto == null) return;
+        if (producto == undefined || producto == null) return false;
         // Sólo se modifica el producto si se proporcionan valores
-        if (nombre !== null) producto.nombre = nombre.trim();
-        if (precio !== null) producto.precio = parseFloat(precio);
-        if (categoria !== null) producto.categoria = parseFloat(categoria);
-        if (imagen !== null) producto.imagen = parseFloat(imagen);
-        this.#guardarMapa();
+        let changed = false;
+        if (nombre !== null) {
+            producto.nombre = nombre.trim();
+            changed = true;
+        }
+        if (precio !== null) {
+            producto.precio = parseFloat(precio);
+            changed = true;
+        }
+        if (categoria !== null) {
+            producto.categoria = categoria;
+            changed = true;
+        }
+        if (imagen !== null) {
+            producto.imagen = imagen;
+            changed = true;
+        }
+
+        if (changed) this.#guardarMapa();
+
+        return changed;
     }
 
     eliminar (id) {

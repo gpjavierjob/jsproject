@@ -1,8 +1,8 @@
 import { BaseWidget } from "./base.js"
+import { Dialogo } from "./dialogo.js";
+
 import { catalogo } from "../clases/catalogo.js";
 import { carrito } from "../clases/carrito.js"
-
-import { Dialogo } from "./dialogo.js";
 
 const TITULO = "Carrito";
 
