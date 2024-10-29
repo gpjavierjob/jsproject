@@ -9,8 +9,9 @@ import { TiempoWidget } from "./tiempo.js";
 import { CatalogoDatos } from "../datos/catalogo.js"
 
 class SPAWidget extends BaseWidget {
-    constructor (parent) {
+    constructor (parent, cargarDatosDePrueba=false) {
         super(parent);
+        this.cargarDatosDePrueba = cargarDatosDePrueba;
         this.vistaActiva = null;
     }
 
@@ -109,10 +110,13 @@ class SPAWidget extends BaseWidget {
         comprasWidget.onVerProducto = this.cambiarVistaProducto.bind(this);
         carritoBadgeWidget.onVerCarrito = this.cambiarVistaCarrito.bind(this);
 
-        const datos = new CatalogoDatos();
-        datos.cargar(() => {
-            comprasWidget.actualizar();   
-        });
+        if (this.cargarDatosDePrueba) {
+            const datos = new CatalogoDatos();
+            datos.cargar(() => {
+                comprasWidget.actualizar();   
+            });
+            this.cargarDatosDePrueba = false;
+        }
     }
 
     mostrarVistaCatalogo () {
